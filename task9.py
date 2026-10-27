@@ -1,56 +1,86 @@
-print("CAMPUS EVENT BUDGET")
+"""Simple campus festival registration and finance audit."""
 
-try:
-    venue = float(input("Venue cost: Rs. "))
-    equipment = float(input("Equipment cost: Rs. "))
-    transport = float(input("Transport cost: Rs. "))
-    catering = float(input("Catering cost per participant: Rs. "))
-    certificate = float(input("Certificate cost per participant: Rs. "))
-    registration_fee = float(input("Registration fee per participant: Rs. "))
-    participants = int(input("Expected number of participants: "))
-    sponsorship = float(input("Sponsorship amount: Rs. "))
 
-    values = [venue, equipment, transport, catering, certificate,
-              registration_fee, sponsorship]
+def read_amount(message):
+    while True:
+        try:
+            amount = int(input(message))
+            if amount >= 0:
+                return amount
+        except ValueError:
+            pass
+        print("Please enter a whole number that is zero or more.")
 
-    if min(values) < 0 or participants < 0:
-        print("Error: Costs and participant count cannot be negative.")
-    else:
-        fixed_cost = venue + equipment + transport
-        cost_per_participant = catering + certificate
-        total_cost = fixed_cost + cost_per_participant * participants
-        contributions = registration_fee * participants
-        total_funds = contributions + sponsorship
-        shortfall = total_cost - total_funds
 
-        # Break-even registrations = fixed costs left after sponsorship
-        # divided by the amount each participant contributes after costs.
-        needed = fixed_cost - sponsorship
-        contribution_per_person = registration_fee - cost_per_participant
+print("CAMPUS FESTIVAL AUDIT")
+print("Enter all money amounts in whole rupees.\n")
 
-        if needed <= 0:
-            break_even_count = 0
-        elif contribution_per_person <= 0:
-            break_even_count = None
-        else:
-            break_even_count = int(needed / contribution_per_person)
-            if break_even_count * contribution_per_person < needed:
-                break_even_count += 1
+participants = []
+registered_ids = set()
+duplicate_ids = []
+registration_total = 0
 
-        print("\n--- EVENT SUMMARY ---")
-        print(f"Total event cost:        Rs. {total_cost:.2f}")
-        print(f"Participant contributions: Rs. {contributions:.2f}")
-        print(f"Sponsorship:             Rs. {sponsorship:.2f}")
+participant_count = read_amount("How many registrations will you enter? ")
 
-        if shortfall > 0:
-            print(f"Funding shortfall:       Rs. {shortfall:.2f}")
-        else:
-            print(f"Surplus:                 Rs. {-shortfall:.2f}")
+for number in range(participant_count):
+    print("\nRegistration", number + 1)
+    student_id = input("Student ID: ").strip()
+    while not student_id:
+        print("Student ID cannot be empty.")
+        student_id = input("Student ID: ").strip()
 
-        if break_even_count is None:
-            print("Break-even is not possible with this registration fee.")
-        else:
-            print(f"Registrations needed to break even: {break_even_count}")
+    if student_id in registered_ids:
+        duplicate_ids.append(student_id)
+        print("Duplicate registration found. This entry will not be counted.")
+        continue
 
-except ValueError:
-    print("Error: Enter valid numbers.")
+    name = input("Student name: ").strip()
+    fee = read_amount("Registration fee paid (rupees): ")
+
+    registered_ids.add(student_id)
+    participants.append((student_id, name, fee))
+    registration_total += fee
+
+print("\nSPONSORSHIPS")
+sponsorship_total = 0
+sponsor_count = read_amount("How many sponsorships were received? ")
+
+for number in range(sponsor_count):
+    sponsor = input("Sponsor name: ").strip()
+    amount = read_amount("Contribution from " + sponsor + " (rupees): ")
+    sponsorship_total += amount
+
+print("\nEXPENSES")
+expense_total = 0
+expense_count = read_amount("How many expenses were paid? ")
+
+for number in range(expense_count):
+    expense = input("Expense description: ").strip()
+    amount = read_amount("Cost of " + expense + " (rupees): ")
+    expense_total += amount
+
+income_total = registration_total + sponsorship_total
+balance = income_total - expense_total
+
+print("\nAUDIT SUMMARY")
+print("Unique participants:", len(participants))
+for student_id, name, fee in participants:
+    print("-", student_id, name, "- fee:", fee, "rupees")
+
+if duplicate_ids:
+    print("Duplicate student IDs:", ", ".join(duplicate_ids))
+else:
+    print("Duplicate registrations: None")
+
+print("Registration fees:", registration_total, "rupees")
+print("Sponsorships:", sponsorship_total, "rupees")
+print("Total income:", income_total, "rupees")
+print("Total expenses:", expense_total, "rupees")
+print("Final balance:", balance, "rupees")
+
+if balance > 0:
+    print("Result: Festival has a surplus.")
+elif balance < 0:
+    print("Result: Festival has a deficit.")
+else:
+    print("Result: Income and expenses are equal.")
