@@ -1,86 +1,79 @@
-"""Simple campus festival registration and finance audit."""
 
+print("CAMPUS FESTIVAL REGISTRATION AND FINANCE AUDIT")
 
-def read_amount(message):
-    while True:
-        try:
-            amount = int(input(message))
-            if amount >= 0:
-                return amount
-        except ValueError:
-            pass
-        print("Please enter a whole number that is zero or more.")
-
-
-print("CAMPUS FESTIVAL AUDIT")
-print("Enter all money amounts in whole rupees.\n")
-
+# Registration details
 participants = []
-registered_ids = set()
-duplicate_ids = []
+student_ids = []
 registration_total = 0
 
-participant_count = read_amount("How many registrations will you enter? ")
+participant_count = int(input("Enter number of participants: "))
 
-for number in range(participant_count):
-    print("\nRegistration", number + 1)
-    student_id = input("Student ID: ").strip()
-    while not student_id:
-        print("Student ID cannot be empty.")
-        student_id = input("Student ID: ").strip()
+for i in range(participant_count):
+    print("\nRegistration", i + 1)
 
-    if student_id in registered_ids:
-        duplicate_ids.append(student_id)
-        print("Duplicate registration found. This entry will not be counted.")
-        continue
+    student_id = input("Enter Student ID: ")
 
-    name = input("Student name: ").strip()
-    fee = read_amount("Registration fee paid (rupees): ")
+    if student_id in student_ids:
+        print("Duplicate registration. Not counted.")
 
-    registered_ids.add(student_id)
-    participants.append((student_id, name, fee))
-    registration_total += fee
+    else:
+        student_ids.append(student_id)
 
-print("\nSPONSORSHIPS")
+        name = input("Enter Student Name: ")
+        fee = int(input("Enter Registration Fee: "))
+
+        participants.append(name)
+        registration_total = registration_total + fee
+
+
+# Sponsorship details
+print("\nSPONSORSHIP DETAILS")
+
+sponsorship_count = int(input("Enter number of sponsors: "))
 sponsorship_total = 0
-sponsor_count = read_amount("How many sponsorships were received? ")
 
-for number in range(sponsor_count):
-    sponsor = input("Sponsor name: ").strip()
-    amount = read_amount("Contribution from " + sponsor + " (rupees): ")
-    sponsorship_total += amount
+for i in range(sponsorship_count):
+    sponsor = input("Enter Sponsor Name: ")
+    amount = int(input("Enter Sponsorship Amount: "))
 
-print("\nEXPENSES")
+    sponsorship_total = sponsorship_total + amount
+
+
+# Expense details
+print("\nEXPENSE DETAILS")
+
+expense_count = int(input("Enter number of expenses: "))
 expense_total = 0
-expense_count = read_amount("How many expenses were paid? ")
 
-for number in range(expense_count):
-    expense = input("Expense description: ").strip()
-    amount = read_amount("Cost of " + expense + " (rupees): ")
-    expense_total += amount
+for i in range(expense_count):
+    expense = input("Enter Expense Name: ")
+    cost = int(input("Enter Expense Amount: "))
 
-income_total = registration_total + sponsorship_total
-balance = income_total - expense_total
+    expense_total = expense_total + cost
 
-print("\nAUDIT SUMMARY")
-print("Unique participants:", len(participants))
-for student_id, name, fee in participants:
-    print("-", student_id, name, "- fee:", fee, "rupees")
 
-if duplicate_ids:
-    print("Duplicate student IDs:", ", ".join(duplicate_ids))
-else:
-    print("Duplicate registrations: None")
+# Financial calculation
+total_income = registration_total + sponsorship_total
+balance = total_income - expense_total
 
-print("Registration fees:", registration_total, "rupees")
-print("Sponsorships:", sponsorship_total, "rupees")
-print("Total income:", income_total, "rupees")
-print("Total expenses:", expense_total, "rupees")
-print("Final balance:", balance, "rupees")
 
+# Audit summary
+print("\n===== AUDIT SUMMARY =====")
+
+print("Total Participants:", len(participants))
+print("Registration Fees:", registration_total)
+print("Sponsorship Amount:", sponsorship_total)
+print("Total Income:", total_income)
+print("Total Expenses:", expense_total)
+print("Final Balance:", balance)
+
+
+# IF ELSE CONDITIONS
 if balance > 0:
-    print("Result: Festival has a surplus.")
+    print("Result: Festival has a Surplus.")
+
 elif balance < 0:
-    print("Result: Festival has a deficit.")
+    print("Result: Festival has a Deficit.")
+
 else:
-    print("Result: Income and expenses are equal.")
+    print("Result: Income and Expenses are Equal.")
